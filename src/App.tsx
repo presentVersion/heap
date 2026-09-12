@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSolTerraStore } from './store/useSolTerraStore';
 import { TopNavbar } from './components/navigation/TopNavbar';
-import { Sidebar } from './components/navigation/Sidebar';
 import { CityTwinView } from './components/citytwin/CityTwinView';
 import { AssetsView } from './components/assets/AssetsView';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
@@ -11,12 +10,12 @@ import { CommunityView } from './components/community/CommunityView';
 import { ReportsView } from './components/reports/ReportsView';
 import { AICopilotModal } from './components/copilot/AICopilotModal';
 import { SettingsModal } from './components/settings/SettingsModal';
+import { LandingPage } from './components/landing/LandingPage';
 
 export const App: React.FC = () => {
   const { 
     activePage, 
     theme, 
-    mapboxToken,
     isCopilotOpen, 
     setIsCopilotOpen, 
     isSettingsOpen, 
@@ -24,22 +23,13 @@ export const App: React.FC = () => {
     setSelectedAsset 
   } = useSolTerraStore();
 
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Sync theme with DOM document attribute
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
-
-  // Auto-open Settings modal on first load if no Mapbox token is set
-  useEffect(() => {
-    if (!mapboxToken) {
-      const timer = setTimeout(() => setIsSettingsOpen(true), 1200);
-      return () => clearTimeout(timer);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Global keyboard shortcuts (Cmd+K / Ctrl+K for Copilot/Search, Escape to clear)
   useEffect(() => {
@@ -79,30 +69,28 @@ export const App: React.FC = () => {
     }
   };
 
+  // 1. Initial Interactive 100-Frame Scroll Landing Page
+  if (showLanding) {
+    return <LandingPage onEnterApp={() => setShowLanding(false)} />;
+  }
+
+  // 2. Full SolTerra Digital Twin Application Workspace (Spacious, No Sidebar, Floating Glass Nav)
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden"
-      style={{ background: 'var(--bg)', color: 'var(--text-1)', transition: 'background 0.3s, color 0.3s' }}>
-      {/* Top Header Navbar */}
+    <div
+      className="flex flex-col h-[100dvh] w-full max-w-[100vw] overflow-hidden relative select-none animate-fadeIn"
+      style={{ background: 'var(--bg)', color: 'var(--text-1)', transition: 'background 0.3s, color 0.3s' }}
+    >
+      {/* Floating Non-Permanent Liquid Glass Header Navbar */}
       <TopNavbar 
         onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         isMobileMenuOpen={isMobileMenuOpen}
+        onGoToLanding={() => setShowLanding(true)}
       />
 
-      {/* Main App Workspace */}
-      <div className="flex flex-1 overflow-hidden relative">
-        {/* Collapsible Left Navigation Sidebar */}
-        <Sidebar 
-          isCollapsed={isSidebarCollapsed}
-          setIsCollapsed={setIsSidebarCollapsed}
-          isMobileOpen={isMobileMenuOpen}
-          onCloseMobile={() => setIsMobileMenuOpen(false)}
-        />
-
-        {/* Dynamic Viewport Content */}
-        <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-          {renderActiveView()}
-        </main>
-      </div>
+      {/* Main Full-Bleed App Workspace */}
+      <main className="flex-1 flex flex-col h-full w-full overflow-hidden relative">
+        {renderActiveView()}
+      </main>
 
       {/* Global Modals */}
       <AICopilotModal />

@@ -1,4 +1,5 @@
-export type ThemeMode = 'dark-obsidian' | 'midnight-blue' | 'emerald-matrix' | 'slate-cyber';
+export type ThemeMode = 'dark-obsidian' | 'midnight-blue' | 'emerald-matrix' | 'slate-cyber' | 'light';
+
 
 export type AssetType = 
   | 'solar_flower'
@@ -170,6 +171,112 @@ export interface CommunityProject {
   organizer: string;
   location: string;
   badge: string;
+}
+
+export type ProposalCategory =
+  | 'Solar Energy'
+  | 'Energy Storage'
+  | 'EV/Mobility'
+  | 'Bio-Junctions'
+  | 'Green Infrastructure'
+  | 'Rainwater'
+  | 'Public Infrastructure'
+  | 'Energy Efficiency';
+
+export type ProjectLifecycleStage =
+  | 'Proposed'
+  | 'Community Review'
+  | 'Under Evaluation'
+  | 'Approved'
+  | 'Rejected'
+  | 'Planned'
+  | 'Under Construction'
+  | 'Operational'
+  | 'Completed';
+
+export interface CivicProposal {
+  id: string;
+  title: string;
+  category: ProposalCategory;
+  location: string;
+  zone: string;
+  coordinates: [number, number];
+  description: string;
+  proposedIntervention: string;
+  expectedBenefit: {
+    cleanEnergyKw?: number;
+    annualGenerationMwh?: number;
+    co2AvoidedTons?: number;
+    waterSavedLiters?: number;
+    benefitedCitizens?: number;
+    estimatedCostLakhs?: number;
+  };
+  supportingDocuments: Array<{
+    name: string;
+    size: string;
+    type: string;
+  }>;
+  lifecycleStatus: ProjectLifecycleStage;
+  submittedDate: string;
+  submittedBy: {
+    name: string;
+    role: string;
+    avatar?: string;
+  };
+  supportCount: number;
+  userVoted?: boolean;
+  governmentResponse?: {
+    authority: string;
+    officialName: string;
+    reviewDate: string;
+    status: 'under_review' | 'technical_feasibility_passed' | 'budget_allocated' | 'sanctioned' | 'rejected';
+    officialRemarks: string;
+  };
+  linkedAssetId?: string;
+  timeline: Array<{
+    stage: ProjectLifecycleStage;
+    date: string;
+    notes: string;
+  }>;
+}
+
+export interface CommunityFeedPost {
+  id: string;
+  type: 'announcement' | 'proposal_milestone' | 'construction_update' | 'citizen_event';
+  author: string;
+  authorRole: string;
+  authorBadge?: string;
+  title: string;
+  content: string;
+  timestamp: string;
+  likesCount: number;
+  commentsCount: number;
+  userLiked?: boolean;
+  linkedProposalId?: string;
+}
+
+export interface SustainabilityChallenge {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  targetMetric: string;
+  currentProgress: number;
+  targetGoal: number;
+  participantsCount: number;
+  deadline: string;
+  rewardBadge: string;
+  userJoined?: boolean;
+}
+
+export interface CivicNotification {
+  id: string;
+  title: string;
+  message: string;
+  date: string;
+  type: 'proposal_update' | 'authority_response' | 'challenge' | 'system';
+  read: boolean;
+  linkedProposalId?: string;
 }
 
 export type ActivePage = 

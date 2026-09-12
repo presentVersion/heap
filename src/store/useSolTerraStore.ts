@@ -330,23 +330,13 @@ const INITIAL_COMMUNITY_PROJECTS: CommunityProject[] = [
   }
 ];
 
-// Fallback token decoded at runtime so GitHub secret scanning does not block git push
-const FALLBACK_TOKEN_B64 = 'cGsuZXlKMUlqb2ljSEpsYzJGdWRHVnljMmx2YmlJc0ltRWlPaUpqYlhScGQzSjNOMTQwY21GMk16RnlNbmR6WjJFMlpUQnBObjAuMDFvSklvMVIyT1Y2OFBEUGtxcEZTUQ==';
-const getFallbackToken = () => {
-  try {
-    return typeof atob !== 'undefined' ? atob(FALLBACK_TOKEN_B64) : '';
-  } catch {
-    return '';
-  }
-};
+import { MAPBOX_PUBLIC_TOKEN, getMapboxToken } from '../constants/mapbox';
 
-export const PERMANENT_MAPBOX_TOKEN = (import.meta as any).env?.VITE_MAPBOX_TOKEN || getFallbackToken();
+export const PERMANENT_MAPBOX_TOKEN = MAPBOX_PUBLIC_TOKEN;
 
 export const useSolTerraStore = create<SolTerraState>((set, get) => {
-  // Permanent token configuration
-  const envToken = (import.meta as any).env?.VITE_MAPBOX_TOKEN || '';
-  const storedToken = typeof window !== 'undefined' ? localStorage.getItem('solterra_mapbox_token') || '' : '';
-  const initialToken = envToken || storedToken || PERMANENT_MAPBOX_TOKEN;
+  // Guaranteed permanent token configuration
+  const initialToken = getMapboxToken();
 
   const initialTelemetry = calculateTelemetry(INITIAL_ASSETS, INITIAL_CONFIG, null);
 

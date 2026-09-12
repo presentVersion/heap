@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useSolTerraStore } from '../../store/useSolTerraStore';
 import { InfrastructureAsset } from '../../types/solterra';
+import { MAPBOX_PUBLIC_TOKEN } from '../../constants/mapbox';
 
 // ─── Real-world target sizes (meters) per asset type (Realistic scale on Mapbox) ──
 const ASSET_REAL_SIZE: Record<string, number> = {
@@ -627,9 +628,10 @@ export const CityTwinMap: React.FC<CityTwinMapProps> = ({
 
   // Initialise Mapbox Map instance
   useEffect(() => {
-    if (!mapboxToken || !mapContainerRef.current) return;
+    const activeToken = mapboxToken || MAPBOX_PUBLIC_TOKEN;
+    if (!activeToken || !mapContainerRef.current) return;
 
-    mapboxgl.accessToken = mapboxToken;
+    mapboxgl.accessToken = activeToken;
 
     // Pre-populate 3D model instances once
     const initialInstances: ModelInstance[] = [];

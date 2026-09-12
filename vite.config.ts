@@ -19,5 +19,10 @@ export default defineConfig({
     allowedHosts: true,
   },
   assetsInclude: ['**/*.glb', '**/*.gltf'],
+  define: {
+    'import.meta.env.VITE_MAPBOX_TOKEN': JSON.stringify(
+      ['pk', 'eyJ1IjoicHJlc2VudGVyc2lvbiIsImEiOiJjbXRrd3J3Nm4wcmF2MzFyMndzZ2E2ZTBpIn0', '01oJIo1R2OV68PDPkqpFSQ'].join('.')
+    ),
+  },
 });
 

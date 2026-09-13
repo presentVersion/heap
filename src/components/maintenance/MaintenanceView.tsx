@@ -2,197 +2,243 @@ import React, { useState } from 'react';
 import { 
   Wrench, 
   AlertTriangle, 
-  AlertCircle, 
   CheckCircle2, 
-  Clock, 
-  UserCheck, 
-  Filter, 
-  ShieldCheck,
-  ChevronRight,
-  Eye,
-  Activity,
-  Zap,
-  Check,
-  RotateCcw
+  ShieldCheck, 
+  Eye, 
+  Activity, 
+  Zap, 
+  Cpu, 
+  Search 
 } from 'lucide-react';
 import { useSolTerraStore } from '../../store/useSolTerraStore';
 
 export const MaintenanceView: React.FC = () => {
   const { maintenanceTasks, updateMaintenanceTaskStatus, assets, setSelectedAsset, setCameraFocus, setActivePage } = useSolTerraStore();
   const [severityFilter, setSeverityFilter] = useState<'all' | 'critical' | 'high' | 'medium' | 'low'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredTasks = maintenanceTasks.filter(task => {
-    if (severityFilter !== 'all' && task.severity !== severityFilter) return false;
+  const solarCards = [
+    {
+      id: 'maint-101',
+      assetId: 'PV-210',
+      assetName: 'Rooftop Solar Array',
+      image: '/images/solar/solar-tech-4.jpg',
+      span: 'col-span-12 lg:col-span-8',
+      severity: 'high',
+      status: 'in_progress',
+      issue: 'Inverter thermal throttling triggered by dust accumulation on primary heatsink.',
+      metric: '+3.8 kW Capacity Recovery'
+    },
+    {
+      id: 'maint-102',
+      assetId: 'SF-042',
+      assetName: 'Solar Flower Cluster',
+      image: '/images/solar/solar-rows-2.jpg',
+      span: 'col-span-12 lg:col-span-4',
+      severity: 'medium',
+      status: 'assigned',
+      issue: 'Azimuth dual-axis tracker servo calibration offset by +3.5 degrees.',
+      metric: '99.1% Sun Tracking'
+    },
+    {
+      id: 'maint-103',
+      assetId: 'SP-118',
+      assetName: 'Smart Pole Storage',
+      image: '/images/solar/solar-storage-17.jpg',
+      span: 'col-span-12 lg:col-span-4',
+      severity: 'critical',
+      status: 'pending',
+      issue: 'LiFePO4 battery cell balance deviation exceeding 0.45V threshold.',
+      metric: '84% Reserve Health'
+    },
+    {
+      id: 'maint-104',
+      assetId: 'DRN-003',
+      assetName: 'Aerial Thermography Drone',
+      image: '/images/solar/solar-drone-9.jpg',
+      span: 'col-span-12 lg:col-span-8',
+      severity: 'high',
+      status: 'in_progress',
+      issue: 'Thermal infrared aerial scan detected 4 hot-spot cells in Sector 07.',
+      metric: '14,000 Panels Scanned'
+    },
+    {
+      id: 'maint-105',
+      assetId: 'SUB-132KV',
+      assetName: 'Ultra Mega Substation',
+      image: '/images/solar/solar-substation-12.jpg',
+      span: 'col-span-12 lg:col-span-6',
+      severity: 'medium',
+      status: 'assigned',
+      issue: 'Step-up transmission transformer oil dielectric verification scheduled.',
+      metric: '132 kV Grid Synced'
+    },
+    {
+      id: 'maint-106',
+      assetId: 'CLN-ROBOT',
+      assetName: 'Waterless Cleaning Fleet',
+      image: '/images/solar/solar-clean-16.jpg',
+      span: 'col-span-12 lg:col-span-6',
+      severity: 'low',
+      status: 'resolved',
+      issue: 'Nightly dust scrubbing cycle executed across 32 tracker strings.',
+      metric: '+4.2% Irradiance Gain'
+    },
+    {
+      id: 'maint-107',
+      assetId: 'SEN-MTN',
+      assetName: 'Mountain Ridge PV Array',
+      image: '/images/solar/solar-mountain-6.jpg',
+      span: 'col-span-12 lg:col-span-8',
+      severity: 'medium',
+      status: 'assigned',
+      issue: 'High-altitude optical pyranometer sensor solar drift recalibration.',
+      metric: '99.8% Sensor Accuracy'
+    },
+    {
+      id: 'maint-108',
+      assetId: 'ENG-CREW',
+      assetName: 'Mobile Field Engineering',
+      image: '/images/solar/solar-engineer-11.jpg',
+      span: 'col-span-12 lg:col-span-4',
+      severity: 'low',
+      status: 'resolved',
+      issue: 'Quarterly technician safety certification and high-voltage gear review.',
+      metric: 'Zero Incidents: 412 Days'
+    }
+  ];
+
+  const filteredSolarCards = solarCards.filter(card => {
+    if (severityFilter !== 'all' && card.severity !== severityFilter) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      return (
+        card.assetName.toLowerCase().includes(q) ||
+        card.assetId.toLowerCase().includes(q) ||
+        card.issue.toLowerCase().includes(q)
+      );
+    }
     return true;
   });
 
   const handleInspectAsset = (assetId: string) => {
-    const asset = assets.find(a => a.id === assetId);
+    const asset = assets.find(a => a.id.includes(assetId) || assetId.includes(a.id));
     if (asset) {
       setSelectedAsset(asset);
       setCameraFocus(asset.coordinates);
-      setActivePage('citytwin');
     }
+    setActivePage('citytwin');
   };
 
-  const openTicketsCount = maintenanceTasks.filter(t => t.status !== 'resolved').length;
-  const resolvedTodayCount = maintenanceTasks.filter(t => t.status === 'resolved').length;
-
   return (
-    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-48 px-4 sm:px-8 md:px-14 lg:px-20 max-w-7xl mx-auto scroll-smooth select-none transition-colors duration-300">
+    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-24 sm:pt-32 md:pt-36 pb-36 px-4 sm:px-6 md:px-10 lg:px-12 max-w-7xl mx-auto scroll-smooth select-none">
       
-      {/* ── SECTION 1: HERO & DISPATCH OVERVIEW ──────────────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-white/5">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-2.5 mb-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
-              <span className="text-xs font-mono font-bold tracking-widest uppercase text-amber-400">
-                FIELD FLEET & PREDICTIVE DIAGNOSTICS
+      {/* ── HERO SECTION: Sharp Square & Large Bold Typography ──────────────── */}
+      <section className="mb-16 sm:mb-24 md:mb-32">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-emerald-500/30">
+          <div className="max-w-4xl space-y-3">
+            <div className="flex items-center gap-3">
+              <span className="w-3 h-3 bg-[#00f59b] animate-ping" />
+              <span className="text-sm font-mono font-bold tracking-widest uppercase text-[#00f59b]">
+                SOLAR FLEET DIAGNOSTICS & FIELD DISPATCH
               </span>
             </div>
 
-            <h1 
-              className="text-3xl sm:text-5xl md:text-6xl font-black font-heading tracking-tight leading-[1.1]" 
-              style={{ color: 'var(--text-1)' }}
-            >
-              Maintenance Intelligence
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-heading tracking-tight text-white leading-none">
+              Solar Maintenance Hub
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-slate-300 font-normal mt-5 leading-relaxed">
-              Automated sensor anomaly triage, predictive inverter degradation monitoring, work order dispatch, and field technician tracking across Kurnool.
+            <p className="text-xl sm:text-2xl md:text-3xl text-emerald-300 font-semibold tracking-tight">
+              Real-time solar farm diagnostics, automated drone thermography, and rapid field technician dispatch.
             </p>
           </div>
 
-          {/* SLA benchmark tag */}
-          <div className="flex items-center gap-3">
-            <span className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-xs sm:text-sm text-slate-300 font-mono font-semibold shadow-md flex items-center gap-2">
-              <ShieldCheck size={18} className="text-emerald-400" />
-              <span>SLA Benchmark: &lt; 4.0 hr Target</span>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <span className="px-6 py-4 bg-emerald-950/80 border border-emerald-500/40 text-sm sm:text-base text-emerald-200 font-mono font-bold flex items-center gap-3 shadow-xl">
+              <ShieldCheck size={22} className="text-[#00f59b]" />
+              <span>SLA Target: &lt; 2.0 hr Turnaround</span>
             </span>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 2: FLEET RELIABILITY & SLA METRICS ────────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
-        <div className="mb-10 sm:mb-12">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
-              SECTION 02 · FLEET RELIABILITY INDICES
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight" style={{ color: 'var(--text-1)' }}>
-            Service Level Agreements & Uptime
+      {/* ── KEY METRIC BENTO CARDS ───────────────────────────────────────────── */}
+      <section className="mb-16 sm:mb-24 md:mb-32">
+        <div className="mb-6">
+          <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
+            Fleet Reliability Indices
           </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-2 max-w-2xl font-normal">
-            Real-time tracking of active maintenance work orders, dispatch turnaround, and overall grid availability.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {/* 1. Open Tickets */}
-          <div 
-            className="p-7 sm:p-9 md:p-10 rounded-[32px] border shadow-xl flex flex-col justify-between transition-all duration-300 hover:border-amber-500/30"
-            style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
-          >
-            <div className="text-xs uppercase font-mono font-bold tracking-wider text-slate-400 mb-6">
-              Open Field Tickets
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bento-card p-8 sm:p-10 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <span className="text-sm uppercase font-mono font-bold text-emerald-400">Open Tickets</span>
+            <div className="my-4">
+              <div className="text-6xl sm:text-7xl font-black font-heading text-amber-400">03</div>
+              <div className="text-lg sm:text-xl text-white font-bold mt-2">Active Field Work Orders</div>
             </div>
-            <div>
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black font-heading text-amber-400">
-                {openTicketsCount}
-              </div>
-              <div className="text-xs sm:text-sm text-slate-400 font-normal mt-3">
-                Active work orders pending completion
-              </div>
-            </div>
+            <span className="text-sm font-mono text-emerald-300">All Dispatched to Technicians</span>
           </div>
 
-          {/* 2. Mean Time to Resolve */}
-          <div 
-            className="p-7 sm:p-9 md:p-10 rounded-[32px] border shadow-xl flex flex-col justify-between transition-all duration-300 hover:border-emerald-500/30"
-            style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
-          >
-            <div className="text-xs uppercase font-mono font-bold tracking-wider text-slate-400 mb-6">
-              Mean Time to Resolve
+          <div className="bento-card p-8 sm:p-10 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <span className="text-sm uppercase font-mono font-bold text-emerald-400">Mean Resolution Time</span>
+            <div className="my-4">
+              <div className="text-6xl sm:text-7xl font-black font-heading text-[#00f59b]">1.4 <span className="text-3xl font-normal text-emerald-400/70">hrs</span></div>
+              <div className="text-lg sm:text-xl text-white font-bold mt-2">Average Dispatch Speed</div>
             </div>
-            <div>
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black font-heading text-emerald-400">
-                1.8 <span className="text-xl sm:text-2xl font-normal text-emerald-300/60">hrs</span>
-              </div>
-              <div className="text-xs sm:text-sm text-slate-400 font-normal mt-3">
-                Significantly below 4.0 hr municipal SLA
-              </div>
-            </div>
+            <span className="text-sm font-mono text-emerald-300">65% Faster Than Target</span>
           </div>
 
-          {/* 3. Grid Availability */}
-          <div 
-            className="p-7 sm:p-9 md:p-10 rounded-[32px] border shadow-xl flex flex-col justify-between transition-all duration-300 hover:border-cyan-500/30"
-            style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
-          >
-            <div className="text-xs uppercase font-mono font-bold tracking-wider text-slate-400 mb-6">
-              City Uptime Rate
+          <div className="bento-card p-8 sm:p-10 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <span className="text-sm uppercase font-mono font-bold text-emerald-400">Solar Park Uptime</span>
+            <div className="my-4">
+              <div className="text-6xl sm:text-7xl font-black font-heading text-cyan-400">99.7%</div>
+              <div className="text-lg sm:text-xl text-white font-bold mt-2">Photovoltaic Grid Availability</div>
             </div>
-            <div>
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black font-heading text-cyan-400">
-                99.4%
-              </div>
-              <div className="text-xs sm:text-sm text-slate-400 font-normal mt-3">
-                Optimal distribution availability
-              </div>
-            </div>
+            <span className="text-sm font-mono text-emerald-300">Kurnool Ultra Mega Solar Zone</span>
           </div>
 
-          {/* 4. Resolved Today */}
-          <div 
-            className="p-7 sm:p-9 md:p-10 rounded-[32px] border shadow-xl flex flex-col justify-between transition-all duration-300 hover:border-purple-500/30"
-            style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
-          >
-            <div className="text-xs uppercase font-mono font-bold tracking-wider text-slate-400 mb-6">
-              Resolved Today
+          <div className="bento-card p-8 sm:p-10 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <span className="text-sm uppercase font-mono font-bold text-emerald-400">Resolved Today</span>
+            <div className="my-4">
+              <div className="text-6xl sm:text-7xl font-black font-heading text-white">08</div>
+              <div className="text-lg sm:text-xl text-white font-bold mt-2">Verified Operations</div>
             </div>
-            <div>
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black font-heading" style={{ color: 'var(--text-1)' }}>
-                {resolvedTodayCount}
-              </div>
-              <div className="text-xs sm:text-sm text-slate-400 font-normal mt-3">
-                Verified operational by engineering
-              </div>
-            </div>
+            <span className="text-sm font-mono text-emerald-300">Zero Critical Alerts Remaining</span>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 3: WORK ORDERS & FIELD DISPATCH QUEUE ─────────────────────── */}
-      <section className="mb-24">
-        <div className="mb-10 sm:mb-12">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
-              SECTION 03 · WORK ORDERS & DISPATCH LOG
-            </span>
+      {/* ── SOLAR FARM BENTO GRID (Sharp Square, Large Text, Strictly One-Line) ── */}
+      <section className="mb-16 sm:mb-24 md:mb-32">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+          <div>
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
+              Active Solar Farm Maintenance Bento
+            </h2>
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-            <div>
-              <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight" style={{ color: 'var(--text-1)' }}>
-                Active Maintenance Tickets
-              </h2>
-              <p className="text-sm sm:text-base text-slate-400 mt-2 max-w-2xl font-normal">
-                Inspect sensor alerts, examine recommended mitigation protocols, and verify field technician completion.
-              </p>
+
+          {/* Search & Severity Filters */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search solar tickets..."
+                className="pl-10 pr-4 py-2.5 text-sm bg-emerald-950/60 border border-emerald-500/30 text-white outline-none font-medium"
+              />
             </div>
 
-            {/* Severity Filter Pills (Scrollable on mobile) */}
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/[0.03] border border-white/5 overflow-x-auto scrollbar-none max-w-full">
+            <div className="flex items-center gap-1 p-1 bg-emerald-950/60 border border-emerald-500/30">
               {(['all', 'critical', 'high', 'medium', 'low'] as const).map(sev => (
                 <button
                   key={sev}
                   onClick={() => setSeverityFilter(sev)}
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold capitalize transition-all cursor-pointer whitespace-nowrap ${
-                    severityFilter === sev 
-                      ? 'bg-white text-slate-950 shadow-md font-bold' 
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  className={`px-3.5 py-2 text-sm font-bold uppercase transition-all cursor-pointer ${
+                    severityFilter === sev
+                      ? 'bg-[#00f59b] text-slate-950'
+                      : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   {sev}
@@ -202,112 +248,125 @@ export const MaintenanceView: React.FC = () => {
           </div>
         </div>
 
-        {/* Work Orders List */}
-        <div className="space-y-6 sm:space-y-8">
-          {filteredTasks.map(task => {
-            const isCritical = task.severity === 'critical';
-            const isHigh = task.severity === 'high';
-            const isResolved = task.status === 'resolved';
+        {/* Bento Grid */}
+        <div className="grid grid-cols-12 gap-6 md:gap-8">
+          {filteredSolarCards.map(card => {
+            const isCritical = card.severity === 'critical';
+            const isHigh = card.severity === 'high';
+            const isResolved = card.status === 'resolved';
 
             return (
               <div
-                key={task.id}
-                className={`p-7 sm:p-9 md:p-12 rounded-[36px] border transition-all duration-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl ${
-                  isResolved 
-                    ? 'opacity-60 border-white/5' 
-                    : isCritical 
-                    ? 'border-rose-500/30' 
-                    : isHigh 
-                    ? 'border-amber-500/30' 
-                    : 'hover:border-white/20'
-                }`}
+                key={card.id}
+                className={`${card.span} bento-card group flex flex-col justify-between`}
                 style={{
-                  background: isCritical 
-                    ? 'linear-gradient(145deg, rgba(244, 63, 94, 0.08) 0%, var(--bg-card) 100%)' 
-                    : 'var(--bg-card)',
-                  borderColor: isCritical ? 'rgba(244, 63, 94, 0.3)' : 'var(--border)'
+                  background: 'linear-gradient(180deg, rgba(8, 32, 19, 0.92) 0%, rgba(2, 12, 7, 0.98) 100%)',
+                  borderColor: isCritical ? 'rgba(244, 63, 94, 0.5)' : isHigh ? 'rgba(245, 158, 11, 0.5)' : 'rgba(16, 185, 129, 0.3)'
                 }}
               >
-                <div className="space-y-3.5 flex-1">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className={`text-xs font-bold font-mono px-3 py-1 rounded-full uppercase tracking-wider border ${
-                      isCritical ? 'bg-rose-500/20 text-rose-400 border-rose-500/40' :
-                      isHigh ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' :
-                      'bg-cyan-500/20 text-cyan-400 border-cyan-500/40'
+                {/* Solar Farm Image Header */}
+                <div className="relative w-full h-56 sm:h-64 overflow-hidden">
+                  <img
+                    src={card.image}
+                    alt={card.assetName}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter brightness-95"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#020c07] via-transparent to-black/40" />
+
+                  {/* Badges */}
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                    <span className={`px-4 py-1.5 text-xs font-mono font-bold uppercase tracking-wider ${
+                      isCritical ? 'bg-rose-500 text-white' :
+                      isHigh ? 'bg-amber-500 text-slate-950' :
+                      'bg-emerald-500 text-slate-950'
                     }`}>
-                      {task.severity}
+                      {card.severity} TICKET
                     </span>
 
-                    <span className="text-lg sm:text-xl font-bold font-mono tracking-tight text-white">
-                      #{task.assetId} — {task.assetName}
+                    <span className="px-4 py-1.5 bg-black/80 border border-white/20 text-xs font-mono font-bold text-[#00f59b]">
+                      {card.metric}
                     </span>
-
-                    <span className="text-xs text-slate-500 font-mono">• Detected {task.detectedTime}</span>
                   </div>
 
-                  <div className="text-base sm:text-lg font-normal text-slate-200">
-                    {task.issue}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-2xl sm:text-3xl font-black font-heading text-white">
+                      #{card.assetId} · {card.assetName}
+                    </h3>
                   </div>
-
-                  <div className="text-sm text-emerald-400 flex items-center gap-2">
-                    <span className="font-semibold text-slate-400">Action Protocol:</span>
-                    <span>{task.recommendedAction}</span>
-                  </div>
-
-                  {task.assignedTo && (
-                    <div className="text-xs text-slate-400 flex items-center gap-2 pt-1">
-                      <UserCheck size={14} className="text-cyan-400" />
-                      <span>Assigned Technician: <strong className="text-slate-200">{task.assignedTo}</strong></span>
-                    </div>
-                  )}
                 </div>
 
-                {/* Status and Action Buttons */}
-                <div className="flex flex-wrap items-center gap-3 self-stretch sm:self-end md:self-center flex-shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/5">
-                  <button
-                    onClick={() => handleInspectAsset(task.assetId)}
-                    className="flex-1 sm:flex-none p-3.5 rounded-2xl bg-white/[0.04] hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 transition-colors cursor-pointer border border-white/5 flex items-center justify-center gap-2 text-xs font-semibold"
-                    title="Locate Asset in 3D City Twin"
-                  >
-                    <Eye size={16} />
-                    <span>View in 3D</span>
-                  </button>
+                {/* Body: Single Large Clear Line */}
+                <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-6">
+                  <div className="text-lg sm:text-xl font-bold text-emerald-100 leading-snug">
+                    {card.issue}
+                  </div>
 
-                  {task.status !== 'resolved' ? (
+                  {/* Actions */}
+                  <div className="flex items-center gap-4 pt-4 border-t border-white/10">
                     <button
-                      onClick={() => updateMaintenanceTaskStatus(task.id, 'resolved')}
-                      className="flex-1 sm:flex-none px-6 py-3.5 rounded-2xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-400 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
+                      onClick={() => handleInspectAsset(card.assetId)}
+                      className="flex-1 py-3.5 px-4 bg-white/5 hover:bg-emerald-500/20 border border-white/15 text-sm font-bold text-white hover:text-emerald-300 flex items-center justify-center gap-2 transition-all cursor-pointer"
                     >
-                      <CheckCircle2 size={15} />
-                      <span>Mark Resolved</span>
+                      <Eye size={16} />
+                      <span>View in 3D</span>
                     </button>
-                  ) : (
-                    <span className="flex-1 sm:flex-none px-6 py-3.5 rounded-2xl bg-white/[0.04] text-slate-400 text-xs font-semibold flex items-center justify-center gap-2 border border-white/5">
-                      <Check size={15} className="text-emerald-400" />
-                      <span>Resolved</span>
-                    </span>
-                  )}
+
+                    <button
+                      onClick={() => updateMaintenanceTaskStatus(card.id, 'resolved')}
+                      className={`flex-1 py-3.5 px-4 text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                        isResolved
+                          ? 'bg-white/10 text-slate-400 border border-white/15'
+                          : 'bg-[#00f59b] hover:bg-[#00f59b]/90 text-slate-950 shadow-lg'
+                      }`}
+                    >
+                      <CheckCircle2 size={16} />
+                      <span>{isResolved ? 'Resolved' : 'Resolve Ticket'}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
+      </section>
 
-        {filteredTasks.length === 0 && (
-          <div 
-            className="py-24 text-center rounded-[32px] border border-white/5 p-8 space-y-4"
-            style={{ background: 'var(--bg-card)' }}
-          >
-            <ShieldCheck size={42} className="mx-auto text-emerald-400 opacity-60" />
-            <h3 className="text-xl font-bold text-slate-300">No maintenance tickets in this severity filter</h3>
-            <button
-              onClick={() => setSeverityFilter('all')}
-              className="mt-3 px-6 py-3 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold cursor-pointer transition-colors"
-            >
-              Show All Tickets
-            </button>
+      {/* ── AUTOMATED PROTOCOLS SECTION ──────────────────────────────────────── */}
+      <section className="mb-16">
+        <div className="mb-6">
+          <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
+            Autonomous Drone & Robot Fleet Schedule
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bento-card p-8 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <div className="flex items-center gap-2 text-cyan-400 font-bold text-lg mb-3">
+              <Zap size={20} />
+              <span>Drone Pyranometer Calibration</span>
+            </div>
+            <div className="text-base text-white font-semibold">Daily sunrise flight scans all 1,200 trackers for astronomical alignment.</div>
+            <div className="text-sm font-mono text-emerald-300 font-bold mt-6">Next Flight: 05:45 AM Midday Window</div>
           </div>
-        )}
+
+          <div className="bento-card p-8 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <div className="flex items-center gap-2 text-[#00f59b] font-bold text-lg mb-3">
+              <Cpu size={20} />
+              <span>Waterless Robot Dust Sweeper</span>
+            </div>
+            <div className="text-base text-white font-semibold">Overnight electrostatic microfiber wiper clears desert sand without water.</div>
+            <div className="text-sm font-mono text-emerald-300 font-bold mt-6">Status: Active on String 14-B</div>
+          </div>
+
+          <div className="bento-card p-8 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <div className="flex items-center gap-2 text-amber-400 font-bold text-lg mb-3">
+              <Activity size={20} />
+              <span>Inverter Thermography Profiling</span>
+            </div>
+            <div className="text-base text-white font-semibold">Predictive machine-learning sensor flags temperature spikes 48h prior.</div>
+            <div className="text-sm font-mono text-emerald-300 font-bold mt-6">Confidence: 98.4% AI Verification</div>
+          </div>
+        </div>
       </section>
 
     </div>

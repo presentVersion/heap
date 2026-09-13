@@ -136,7 +136,7 @@ export const TopNavbar: React.FC<Props> = ({
       <GlassSurface
         width="100%"
         height="64px"
-        borderRadius={32}
+        borderRadius={0}
         distortionScale={-90}
         redOffset={3}
         greenOffset={8}
@@ -144,7 +144,7 @@ export const TopNavbar: React.FC<Props> = ({
         blur={12}
         backgroundOpacity={0.12}
         saturation={1.5}
-        className="w-full px-4 shadow-2xl border border-white/10"
+        className="w-full px-4 shadow-2xl border border-emerald-500/30"
         style={{
           background: theme === 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(9, 12, 22, 0.82)',
           boxShadow: theme === 'light'
@@ -493,51 +493,58 @@ export const TopNavbar: React.FC<Props> = ({
       )}
 
       {/* ── Mobile Bottom App Dock (Native App Bar for Smartphones) ─────────── */}
-      <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-md pointer-events-auto">
+      <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-lg pointer-events-auto">
         <div 
-          className="w-full px-2 py-1.5 rounded-full border shadow-2xl flex items-center justify-around backdrop-blur-2xl"
+          className="w-full px-2.5 py-2 rounded-3xl border shadow-2xl flex items-center justify-around backdrop-blur-2xl"
           style={{
-            background: theme === 'light' ? 'rgba(255, 255, 255, 0.94)' : 'rgba(10, 14, 26, 0.92)',
-            borderColor: 'var(--border)',
-            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.45)'
+            background: 'linear-gradient(180deg, rgba(6, 26, 16, 0.94) 0%, rgba(3, 14, 8, 0.98) 100%)',
+            borderColor: 'rgba(16, 185, 129, 0.25)',
+            boxShadow: '0 16px 40px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(0, 245, 155, 0.15)'
           }}
         >
           {[
-            { id: 'citytwin', label: 'Twin', icon: <IoGlobeOutline size={18} /> },
-            { id: 'assets', label: 'Assets', icon: <IoCubeOutline size={18} /> },
-            { id: 'simulation', label: 'Sim', icon: <IoFlashOutline size={18} /> },
-            { id: 'community', label: 'Civic', icon: <IoPeopleOutline size={18} /> },
+            { id: 'citytwin', label: 'Twin', icon: <IoGlobeOutline size={20} /> },
+            { id: 'analytics', label: 'Analytics', icon: <IoBarChartOutline size={20} /> },
+            { id: 'maintenance', label: 'Maintain', icon: <IoConstructOutline size={20} /> },
+            { id: 'community', label: 'Civic', icon: <IoPeopleOutline size={20} /> },
+            { id: 'reports', label: 'Reports', icon: <IoDocumentTextOutline size={20} /> },
           ].map(tab => {
             const isSelected = activePage === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => setActivePage(tab.id as any)}
-                className={`flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all cursor-pointer ${
+                onClick={() => {
+                  setActivePage(tab.id as any);
+                  if (isMobileMenuOpen && onToggleMobileMenu) onToggleMobileMenu();
+                }}
+                className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all cursor-pointer relative ${
                   isSelected 
-                    ? 'text-emerald-400 font-bold scale-105' 
-                    : 'text-slate-400 hover:text-white'
+                    ? 'text-[#00f59b] font-bold scale-105' 
+                    : 'text-slate-400 hover:text-emerald-300'
                 }`}
               >
-                <div className={`p-1 rounded-xl transition-all ${isSelected ? 'bg-emerald-500/15' : ''}`}>
+                <div className={`p-1.5 rounded-xl transition-all ${isSelected ? 'bg-emerald-500/20 shadow-[0_0_12px_rgba(0,245,155,0.3)]' : ''}`}>
                   {tab.icon}
                 </div>
-                <span className="text-[10px] tracking-tight">{tab.label}</span>
+                <span className="text-[10px] tracking-tight font-medium mt-0.5">{tab.label}</span>
+                {isSelected && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00f59b] absolute -bottom-1 shadow-[0_0_6px_#00f59b]" />
+                )}
               </button>
             );
           })}
 
-          {/* More / Menu Drawer Toggle */}
+          {/* More Drawer Toggle */}
           <button
             onClick={onToggleMobileMenu}
-            className={`flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all cursor-pointer ${
-              isMobileMenuOpen ? 'text-emerald-400 font-bold scale-105' : 'text-slate-400 hover:text-white'
+            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all cursor-pointer ${
+              isMobileMenuOpen ? 'text-[#00f59b] font-bold scale-105' : 'text-slate-400 hover:text-white'
             }`}
           >
-            <div className={`p-1 rounded-xl transition-all ${isMobileMenuOpen ? 'bg-emerald-500/15' : ''}`}>
-              {isMobileMenuOpen ? <X size={18} /> : <Zap size={18} />}
+            <div className={`p-1.5 rounded-xl transition-all ${isMobileMenuOpen ? 'bg-emerald-500/20 shadow-[0_0_12px_rgba(0,245,155,0.3)]' : ''}`}>
+              {isMobileMenuOpen ? <X size={20} /> : <Zap size={20} />}
             </div>
-            <span className="text-[10px] tracking-tight">More</span>
+            <span className="text-[10px] tracking-tight font-medium mt-0.5">More</span>
           </button>
         </div>
       </nav>

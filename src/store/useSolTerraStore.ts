@@ -344,7 +344,7 @@ export const useSolTerraStore = create<SolTerraState>((set, get) => {
     activePage: 'citytwin',
     setActivePage: (activePage) => set({ activePage }),
 
-    theme: (typeof window !== 'undefined' ? (localStorage.getItem('solterra_theme') as ThemeMode) : null) || 'dark-obsidian',
+    theme: (typeof window !== 'undefined' ? (localStorage.getItem('solterra_theme') as ThemeMode) : null) || 'emerald-matrix',
     setTheme: (theme) => {
       if (typeof window !== 'undefined') {
         localStorage.setItem('solterra_theme', theme);

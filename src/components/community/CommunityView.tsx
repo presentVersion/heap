@@ -3,461 +3,361 @@ import {
   Plus, 
   Wrench, 
   Search, 
-  Filter, 
-  Bell, 
-  Sparkles, 
-  Building2, 
-  CheckCircle2, 
-  HeartHandshake,
-  Compass,
-  Layers,
-  MapPin,
-  ArrowDown,
-  RotateCcw
+  Leaf, 
+  ThumbsUp, 
+  Share2 
 } from 'lucide-react';
 import { useSolTerraStore } from '../../store/useSolTerraStore';
-import { CivicProposal, ProposalCategory, ProjectLifecycleStage } from '../../types/solterra';
-import { CivicImpactKPIs } from './CivicImpactKPIs';
-import { CivicProposalCard } from './CivicProposalCard';
-import { ProposalDetailModal } from './ProposalDetailModal';
 import { NewProposalModal } from './NewProposalModal';
 import { InfrastructureIssueReportModal } from './InfrastructureIssueReportModal';
-import { CommunityFeed } from './CommunityFeed';
-import { CommunityChallenges } from './CommunityChallenges';
 
 export const CommunityView: React.FC = () => {
-  const { civicProposals, civicNotifications, markNotificationRead } = useSolTerraStore();
-
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [selectedStage, setSelectedStage] = useState<string>('All');
+  const { civicProposals, voteProposal } = useSolTerraStore();
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'solarpunk' | 'solar' | 'civic'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  
-  const [detailProposal, setDetailProposal] = useState<CivicProposal | null>(null);
   const [isNewProposalOpen, setIsNewProposalOpen] = useState(false);
   const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
 
-  const categories = [
-    'All',
-    'Solar Energy',
-    'Energy Storage',
-    'EV/Mobility',
-    'Bio-Junctions',
-    'Green Infrastructure',
-    'Rainwater',
-    'Public Infrastructure',
-    'Energy Efficiency'
+  // Dedicated Solarpunk & Solar Innovations Bento Cards
+  const communityBentoCards = [
+    {
+      id: 'sp-01',
+      title: 'Solarpunk Bio-Canopy Towers',
+      category: 'solarpunk',
+      image: '/images/solar/solarpunk-biocanopy.jpg',
+      span: 'col-span-12 lg:col-span-8',
+      headline: 'Hexagonal photovoltaic tree canopies integrating vertical hydroponic gardens and LED night lighting.',
+      tag: 'SOLARPUNK INNOVATION',
+      metric: '94.2 kW Clean Output',
+      supporters: 684
+    },
+    {
+      id: 'sp-02',
+      title: 'Algae Micro-Bioreactor Facades',
+      category: 'solarpunk',
+      image: '/images/solar/solarpunk-algae.jpg',
+      span: 'col-span-12 lg:col-span-4',
+      headline: 'Spiral photobioreactor facade tubes capturing carbon and producing clean biomass alongside solar glass.',
+      tag: 'BIO-SOLAR TECH',
+      metric: '12.8 T CO₂/yr Captured',
+      supporters: 512
+    },
+    {
+      id: 'sp-03',
+      title: 'Solar Flower Plaza & Kinetic Pavers',
+      category: 'solarpunk',
+      image: '/images/solar/solarpunk-plaza.jpg',
+      span: 'col-span-12 lg:col-span-4',
+      headline: 'Sun-tracking solar flower canopies paired with piezoelectric kinetic pavers for civic gatherings.',
+      tag: 'CIVIC PLAZA',
+      metric: '4.6 kWh/day Kinetic Yield',
+      supporters: 890
+    },
+    {
+      id: 'sp-04',
+      title: 'Rooftop Solar Citizen Collective',
+      category: 'solar',
+      image: '/images/solar/solar-community-18.jpg',
+      span: 'col-span-12 lg:col-span-8',
+      headline: 'Decentralized residential rooftop solar pooling delivering clean power to 320 neighborhood families.',
+      tag: 'COMMUNITY SOLAR',
+      metric: '35% Bill Savings',
+      supporters: 1420
+    },
+    {
+      id: 'sp-05',
+      title: 'Municipal Auto-Rickshaw EV Canopy',
+      category: 'civic',
+      image: '/images/solar/solar-substation-12.jpg',
+      span: 'col-span-12 lg:col-span-6',
+      headline: 'Shared high-speed solar charging depot providing clean power for 180 auto-rickshaw drivers.',
+      tag: 'CLEAN MOBILITY',
+      metric: '45 EV Fast Stalls',
+      supporters: 742
+    },
+    {
+      id: 'sp-06',
+      title: 'School Microgrid & STEM Academy',
+      category: 'civic',
+      image: '/images/solar/solar-panels-14.jpg',
+      span: 'col-span-12 lg:col-span-6',
+      headline: 'Classroom solar array coupled with an interactive student battery laboratory for science education.',
+      tag: 'STEM EDUCATION',
+      metric: '1,200 Students/Year',
+      supporters: 630
+    },
+    {
+      id: 'sp-07',
+      title: 'Agrivoltaic Mountain Farm Co-Op',
+      category: 'solar',
+      image: '/images/solar/solar-mountain-6.jpg',
+      span: 'col-span-12 lg:col-span-12',
+      headline: 'Dual-use agricultural crops cultivated under high-clearance tracking solar panels for shade preservation.',
+      tag: 'AGRIVOLTAICS',
+      metric: '+22% Crop Water Retention',
+      supporters: 915
+    }
   ];
 
-  const stages = [
-    'All',
-    'Proposed',
-    'Community Review',
-    'Under Evaluation',
-    'Approved',
-    'Planned',
-    'Under Construction',
-    'Operational'
-  ];
-
-  // Filter proposals
-  const filteredProposals = civicProposals.filter(p => {
-    if (selectedCategory !== 'All' && p.category !== selectedCategory) return false;
-    if (selectedStage !== 'All' && p.lifecycleStatus !== selectedStage) return false;
+  const filteredCards = communityBentoCards.filter(card => {
+    if (selectedFilter !== 'all' && card.category !== selectedFilter) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       return (
-        p.title.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.location.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
+        card.title.toLowerCase().includes(q) ||
+        card.headline.toLowerCase().includes(q)
       );
     }
     return true;
   });
 
-  const unreadNotifications = civicNotifications.filter(n => !n.read).length;
+  const [votedMap, setVotedMap] = useState<Record<string, boolean>>({});
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  const handleVote = (id: string) => {
+    setVotedMap(prev => ({ ...prev, [id]: !prev[id] }));
   };
-
-  const handleResetFilters = () => {
-    setSelectedCategory('All');
-    setSelectedStage('All');
-    setSearchQuery('');
-  };
-
-  const hasActiveFilters = selectedCategory !== 'All' || selectedStage !== 'All' || searchQuery.trim() !== '';
 
   return (
-    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-48 px-4 sm:px-8 md:px-14 lg:px-20 max-w-7xl mx-auto scroll-smooth select-none transition-colors duration-300">
+    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-24 sm:pt-32 md:pt-36 pb-36 px-4 sm:px-6 md:px-10 lg:px-12 max-w-7xl mx-auto scroll-smooth select-none">
       
-      {/* ── SECTION 1: HERO / INTRODUCTION ───────────────────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
-        <div className="max-w-3xl">
-          {/* 1. Small eyebrow / context label */}
-          <div className="flex items-center gap-2.5 mb-5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-emerald-400">
-              CIVIC PARTICIPATION & INFRASTRUCTURE CO-CREATION
-            </span>
+      {/* ── HERO SECTION: Sharp Square & Large Bold Typography ──────────────── */}
+      <section className="mb-16 sm:mb-24 md:mb-32">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-emerald-500/30">
+          <div className="max-w-4xl space-y-3">
+            <div className="flex items-center gap-3">
+              <span className="w-3 h-3 bg-[#00f59b] animate-ping" />
+              <span className="text-sm font-mono font-bold tracking-widest uppercase text-[#00f59b]">
+                CIVIC CO-CREATION & SOLARPUNK INFRASTRUCTURE
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-heading tracking-tight text-white leading-none">
+              Civic Sustainability Hub
+            </h1>
+
+            <p className="text-xl sm:text-2xl md:text-3xl text-emerald-300 font-semibold tracking-tight">
+              Democratic solarpunk infrastructure, citizen energy petitions, and community microgrid co-creation.
+            </p>
           </div>
 
-          {/* 2. Large page title */}
-          <h1 
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black font-heading tracking-tight leading-[1.08]" 
-            style={{ color: 'var(--text-1)' }}
-          >
-            Civic Sustainability Hub
-          </h1>
-
-          {/* 3. Short readable description */}
-          <p className="text-base sm:text-lg md:text-xl text-slate-300 font-normal mt-6 leading-relaxed max-w-3xl">
-            Democratic infrastructure development for Kurnool. Propose clean energy microgrids, review municipal engineering feasibility, and track projects from citizen petition to operational grid connection.
-          </p>
-
-          {/* 4. Primary actions (Mobile friendly stack & desktop row) */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mt-10">
-            {/* New Proposal Button (Primary CTA) */}
+          <div className="flex flex-wrap items-center gap-4 flex-shrink-0">
             <button
               onClick={() => setIsNewProposalOpen(true)}
-              className="w-full sm:w-auto px-7 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider text-slate-950 flex items-center justify-center gap-2.5 transition-all duration-300 shadow-xl cursor-pointer hover:scale-105"
-              style={{
-                background: 'linear-gradient(135deg, #00f59b 0%, #06b6d4 100%)',
-                boxShadow: '0 8px 24px rgba(0, 245, 155, 0.35)'
-              }}
+              className="px-7 py-4 bg-[#00f59b] hover:bg-[#00f59b]/90 text-slate-950 text-sm sm:text-base font-black uppercase tracking-wider flex items-center gap-2 shadow-xl cursor-pointer"
             >
               <Plus size={18} />
               <span>Propose Project</span>
             </button>
 
-            {/* Report Infrastructure Issue (Maintenance-linked CTA) */}
             <button
               onClick={() => setIsReportIssueOpen(true)}
-              className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
+              className="px-6 py-4 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-sm sm:text-base font-bold flex items-center gap-2 transition-all cursor-pointer"
             >
-              <Wrench size={16} />
-              <span>Report Infrastructure Issue</span>
+              <Wrench size={18} />
+              <span>Report Anomaly</span>
             </button>
+          </div>
+        </div>
+      </section>
 
-            {/* Notifications Button */}
+      {/* ── KEY CIVIC INDICES ────────────────────────────────────────────────── */}
+      <section className="mb-16 sm:mb-24 md:mb-32">
+        <div className="mb-6">
+          <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
+            Community Renewable Energy Yield
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bento-card p-8 sm:p-10 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <span className="text-sm uppercase font-mono font-bold text-emerald-400">Citizen Endorsements</span>
+            <div className="my-4">
+              <div className="text-6xl sm:text-7xl font-black font-heading text-[#00f59b]">4,820</div>
+              <div className="text-lg sm:text-xl text-white font-bold mt-2">Verified Resident Signatures</div>
+            </div>
+            <span className="text-sm font-mono text-emerald-300">+340 Votes Cast This Week</span>
+          </div>
+
+          <div className="bento-card p-8 sm:p-10 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <span className="text-sm uppercase font-mono font-bold text-emerald-400">Solar Projects Built</span>
+            <div className="my-4">
+              <div className="text-6xl sm:text-7xl font-black font-heading text-cyan-400">14</div>
+              <div className="text-lg sm:text-xl text-white font-bold mt-2">Active Microgrids Live</div>
+            </div>
+            <span className="text-sm font-mono text-emerald-300">Zero Public Debt Financed</span>
+          </div>
+
+          <div className="bento-card p-8 sm:p-10 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <span className="text-sm uppercase font-mono font-bold text-emerald-400">Citizen Clean Energy</span>
+            <div className="my-4">
+              <div className="text-6xl sm:text-7xl font-black font-heading text-white">42.8 <span className="text-2xl font-normal text-emerald-400/70">MWh</span></div>
+              <div className="text-lg sm:text-xl text-white font-bold mt-2">Direct Citizen Yield</div>
+            </div>
+            <span className="text-sm font-mono text-emerald-300">Powers 1,400 Homes Daily</span>
+          </div>
+
+          <div className="bento-card p-8 sm:p-10 flex flex-col justify-between" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+            <span className="text-sm uppercase font-mono font-bold text-emerald-400">Municipal Matching</span>
+            <div className="my-4">
+              <div className="text-6xl sm:text-7xl font-black font-heading text-amber-400">100%</div>
+              <div className="text-lg sm:text-xl text-white font-bold mt-2">KMC Matching Grant Fund</div>
+            </div>
+            <span className="text-sm font-mono text-emerald-300">₹4.2 Cr Allocated to Citizen Solar</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SOLARPUNK & SOLAR BENTO GRID ──────────────────────────────────────── */}
+      <section className="mb-16 sm:mb-24 md:mb-32">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+          <div>
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
+              Active Civic Solarpunk Bento Grid
+            </h2>
+          </div>
+
+          {/* Search and Category Filters */}
+          <div className="flex flex-wrap items-center gap-3">
             <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
-                style={{ color: 'var(--text-1)' }}
-              >
-                <Bell size={16} />
-                <span>Civic Alerts</span>
-                {unreadNotifications > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-bold text-[10px] font-mono">
-                    {unreadNotifications}
-                  </span>
-                )}
-              </button>
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search projects..."
+                className="pl-10 pr-4 py-2.5 text-sm bg-emerald-950/60 border border-emerald-500/30 text-white outline-none font-medium"
+              />
+            </div>
 
-              {/* Notifications Dropdown */}
-              {showNotifications && (
-                <div 
-                  className="absolute left-0 sm:left-auto sm:right-0 top-16 w-80 max-w-[90vw] p-5 rounded-3xl border shadow-2xl z-50 space-y-3 slide-in"
-                  style={{ background: 'var(--bg-2)', borderColor: 'var(--border)' }}
+            <div className="flex items-center gap-1 p-1 bg-emerald-950/60 border border-emerald-500/30">
+              {[
+                { id: 'all', label: 'All Projects' },
+                { id: 'solarpunk', label: 'Solarpunk Tech' },
+                { id: 'solar', label: 'Solar Collectives' },
+                { id: 'civic', label: 'Civic Mobility' }
+              ].map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedFilter(cat.id as any)}
+                  className={`px-3.5 py-2 text-sm font-bold uppercase transition-all cursor-pointer ${
+                    selectedFilter === cat.id
+                      ? 'bg-[#00f59b] text-slate-950'
+                      : 'text-slate-300 hover:text-white'
+                  }`}
                 >
-                  <div className="flex items-center justify-between pb-3 border-b border-white/5 text-xs font-bold">
-                    <span>Municipal Engineering Updates</span>
-                    <span className="text-emerald-400 font-mono text-[11px]">{unreadNotifications} unread</span>
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bento Grid */}
+        <div className="grid grid-cols-12 gap-6 md:gap-8">
+          {filteredCards.map(card => {
+            const hasVoted = votedMap[card.id];
+            const currentSupporters = card.supporters + (hasVoted ? 1 : 0);
+
+            return (
+              <div
+                key={card.id}
+                className={`${card.span} bento-card group flex flex-col justify-between`}
+                style={{
+                  background: 'linear-gradient(180deg, rgba(8, 32, 19, 0.92) 0%, rgba(2, 12, 7, 0.98) 100%)',
+                  borderColor: 'rgba(16, 185, 129, 0.3)'
+                }}
+              >
+                {/* Solarpunk / Solar Image Header */}
+                <div className="relative w-full h-56 sm:h-64 overflow-hidden">
+                  <img
+                    src={card.image}
+                    alt={card.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter brightness-95"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#020c07] via-transparent to-black/40" />
+
+                  {/* Badges */}
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                    <span className="px-4 py-1.5 text-xs font-mono font-bold uppercase tracking-wider bg-[#00f59b] text-slate-950 shadow-lg">
+                      {card.tag}
+                    </span>
+
+                    <span className="px-4 py-1.5 bg-black/80 border border-white/20 text-xs font-mono font-bold text-[#00f59b]">
+                      {card.metric}
+                    </span>
                   </div>
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {civicNotifications.map(n => (
-                      <div 
-                        key={n.id} 
-                        onClick={() => markNotificationRead(n.id)}
-                        className="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-xs space-y-1 cursor-pointer hover:bg-white/5 transition-colors"
-                      >
-                        <div className="font-semibold text-slate-200">{n.title}</div>
-                        <div className="text-[11px] text-slate-400">{n.message}</div>
-                        <div className="text-[9px] text-slate-500 font-mono">{n.date}</div>
-                      </div>
-                    ))}
+
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-2xl sm:text-3xl font-black font-heading text-white">
+                      {card.title}
+                    </h3>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* Quick Page Jump Navigation Pills (Scrollable on mobile) */}
-          <div className="flex items-center gap-2 pt-8 mt-10 border-t border-white/5 overflow-x-auto scrollbar-none pb-2">
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-wider mr-2 flex-shrink-0">
-              Jump to Section:
-            </span>
-            <button
-              onClick={() => scrollToSection('sec-overview')}
-              className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-white/10 text-xs text-slate-300 font-medium transition-colors cursor-pointer border border-white/5 flex items-center gap-1.5 flex-shrink-0"
-            >
-              <span>Overview & KPIs</span>
-              <ArrowDown size={12} className="text-slate-500" />
-            </button>
-            <button
-              onClick={() => scrollToSection('sec-proposals')}
-              className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-white/10 text-xs text-slate-300 font-medium transition-colors cursor-pointer border border-white/5 flex items-center gap-1.5 flex-shrink-0"
-            >
-              <span>Proposals & Exploration</span>
-              <ArrowDown size={12} className="text-slate-500" />
-            </button>
-            <button
-              onClick={() => scrollToSection('sec-feed')}
-              className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-white/10 text-xs text-slate-300 font-medium transition-colors cursor-pointer border border-white/5 flex items-center gap-1.5 flex-shrink-0"
-            >
-              <span>Civic Activity Feed</span>
-              <ArrowDown size={12} className="text-slate-500" />
-            </button>
-            <button
-              onClick={() => scrollToSection('sec-challenges')}
-              className="px-4 py-2 rounded-xl bg-white/[0.03] hover:bg-white/10 text-xs text-slate-300 font-medium transition-colors cursor-pointer border border-white/5 flex items-center gap-1.5 flex-shrink-0"
-            >
-              <span>Sustainability Challenges</span>
-              <ArrowDown size={12} className="text-slate-500" />
-            </button>
-          </div>
+                {/* Body: Single Large Clear Line */}
+                <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-6">
+                  <div className="text-lg sm:text-xl font-bold text-emerald-100 leading-snug">
+                    {card.headline}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+                    <button
+                      onClick={() => handleVote(card.id)}
+                      className={`flex-1 py-3.5 px-4 text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                        hasVoted
+                          ? 'bg-[#00f59b] text-slate-950 shadow-lg'
+                          : 'bg-white/5 hover:bg-emerald-500/20 border border-white/15 text-white hover:text-emerald-300'
+                      }`}
+                    >
+                      <ThumbsUp size={16} className={hasVoted ? 'fill-slate-950' : ''} />
+                      <span>{hasVoted ? `Endorsed (${currentSupporters})` : `Endorse (${currentSupporters})`}</span>
+                    </button>
+
+                    <button
+                      onClick={() => alert(`Project ${card.title} shared to civic forum!`)}
+                      className="p-3.5 bg-white/5 hover:bg-white/10 border border-white/15 text-white transition-all cursor-pointer"
+                      title="Share to Forum"
+                    >
+                      <Share2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* ── SECTION 2: COMMUNITY OVERVIEW / METRIC CARDS ─────────────────────── */}
-      <section id="sec-overview" className="mb-32 md:mb-44 lg:mb-52 scroll-mt-28">
-        <div className="mb-10 sm:mb-12">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
-              SECTION 02 · MUNICIPAL OVERVIEW
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight" style={{ color: 'var(--text-1)' }}>
-            Collective Civic Impact
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-2 max-w-2xl font-normal">
-            Real-time municipal aggregates of citizen endorsements, approved engineering proposals, and community clean power generation.
-          </p>
-        </div>
-
-        <CivicImpactKPIs />
-      </section>
-
-      {/* ── SECTION 3: SEARCH & FILTERS ──────────────────────────────────────── */}
-      <section id="sec-proposals" className="mb-16 sm:mb-20 scroll-mt-28">
-        <div className="mb-10 sm:mb-12">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
-              SECTION 03 & 04 · PROJECT & PROPOSAL EXPLORATION
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight" style={{ color: 'var(--text-1)' }}>
-            Explore Civic Proposals & Infrastructure
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-2 max-w-2xl font-normal">
-            Search public infrastructure initiatives, filter by engineering lifecycle stage, or explore by sustainability category.
-          </p>
-        </div>
-
-        {/* Filter Controls Box */}
-        <div 
-          className="p-6 sm:p-8 md:p-12 rounded-[32px] border shadow-xl space-y-7"
-          style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
-        >
-          {/* Search Bar */}
-          <div className="relative w-full max-w-2xl">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search proposals, zones, categories, or keywords..."
-              className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl text-sm sm:text-base outline-none transition-all border shadow-inner"
-              style={{
-                background: 'rgba(255, 255, 255, 0.04)',
-                borderColor: 'var(--border)',
-                color: 'var(--text-1)'
-              }}
-            />
-          </div>
-
-          {/* Lifecycle Stage Pills */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
-                Lifecycle Stage:
-              </span>
-              {selectedStage !== 'All' && (
-                <button 
-                  onClick={() => setSelectedStage('All')}
-                  className="text-xs text-emerald-400 hover:underline"
-                >
-                  Clear stage filter
-                </button>
-              )}
+      {/* ── CITIZEN PLEDGE FOOTER ────────────────────────────────────────────── */}
+      <section className="mb-16">
+        <div className="bento-card p-8 sm:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
+          <div>
+            <div className="flex items-center gap-3 text-[#00f59b] font-bold text-xl mb-2">
+              <Leaf size={24} />
+              <span>Solarpunk Citizen Energy Pledge</span>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-              {stages.map(st => {
-                const isSelected = selectedStage === st;
-                return (
-                  <button
-                    key={st}
-                    onClick={() => setSelectedStage(st)}
-                    className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border ${
-                      isSelected
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm font-bold'
-                        : 'bg-white/[0.02] text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
-                    }`}
-                  >
-                    {st}
-                  </button>
-                );
-              })}
+            <div className="text-base sm:text-lg text-white font-semibold">
+              Join 1,200+ Kurnool citizens committing to zero-carbon energy habits and community microgrid pooling.
             </div>
           </div>
 
-          {/* Category Filter Chips */}
-          <div className="space-y-3 pt-5 border-t border-white/5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-slate-400 uppercase tracking-wider">
-                Domain Category:
-              </span>
-              {selectedCategory !== 'All' && (
-                <button 
-                  onClick={() => setSelectedCategory('All')}
-                  className="text-xs text-emerald-400 hover:underline"
-                >
-                  Clear category filter
-                </button>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-              {categories.map(cat => {
-                const isSelected = selectedCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border ${
-                      isSelected
-                        ? 'bg-white text-slate-950 font-bold shadow-md border-white'
-                        : 'bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/5 border-white/5'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Active Filter Summary Bar */}
-          {hasActiveFilters && (
-            <div className="pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-3 text-xs">
-              <span className="text-slate-400">
-                Filtered results: <strong className="text-emerald-400">{filteredProposals.length}</strong> matching proposal{filteredProposals.length === 1 ? '' : 's'}
-              </span>
-              <button
-                onClick={handleResetFilters}
-                className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white hover:underline cursor-pointer"
-              >
-                <RotateCcw size={13} />
-                <span>Reset all filters</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ── SECTION 4 & 5: PROPOSALS COLLECTION ──────────────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 sm:gap-10 md:gap-14">
-          {filteredProposals.map(proposal => (
-            <CivicProposalCard
-              key={proposal.id}
-              proposal={proposal}
-              onOpenDetails={p => setDetailProposal(p)}
-            />
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredProposals.length === 0 && (
-          <div 
-            className="py-24 text-center rounded-[32px] border border-white/5 p-8 space-y-4"
-            style={{ background: 'var(--bg-card)' }}
+          <button
+            onClick={() => alert('Thank you! Your civic pledge has been recorded with Kurnool Municipal Corporation.')}
+            className="px-7 py-4 bg-[#00f59b] text-slate-950 font-black text-sm uppercase tracking-wider whitespace-nowrap shadow-xl hover:scale-105 transition-all cursor-pointer"
           >
-            <Compass size={42} className="mx-auto text-slate-500 opacity-60" />
-            <h3 className="text-xl font-bold text-slate-300">No proposals match your current filter criteria</h3>
-            <p className="text-sm text-slate-400 max-w-md mx-auto">
-              Try adjusting the category or lifecycle stage filter, or search with different keywords.
-            </p>
-            <button
-              onClick={handleResetFilters}
-              className="mt-3 px-6 py-3 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold cursor-pointer transition-colors"
-            >
-              Reset Filters
-            </button>
-          </div>
-        )}
-      </section>
-
-      {/* ── SECTION 6: COMMUNITY ACTIVITY & IMPACT (CIVIC FEED) ──────────────── */}
-      <section id="sec-feed" className="mb-32 md:mb-44 lg:mb-52 scroll-mt-28">
-        <div className="mb-10 sm:mb-12">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
-              SECTION 06 · LIVE CIVIC ACTIVITY & IMPACT
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight" style={{ color: 'var(--text-1)' }}>
-            Civic Feed & Municipal Updates
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-2 max-w-2xl font-normal">
-            Real-time stream of municipal engineer announcements, citizen dialogue, and infrastructure milestone celebrations.
-          </p>
+            Take Citizen Pledge
+          </button>
         </div>
-
-        <CommunityFeed />
       </section>
 
-      {/* ── SECTION 7: ADDITIONAL COMMUNITY CONTENT (CHALLENGES) ─────────────── */}
-      <section id="sec-challenges" className="mb-20 scroll-mt-28">
-        <div className="mb-10 sm:mb-12">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
-              SECTION 07 · CITIZEN COLLECTIVE ACTION
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight" style={{ color: 'var(--text-1)' }}>
-            Citizen Sustainability Challenges & Pledges
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-2 max-w-2xl font-normal">
-            Join neighborhood sustainability campaigns, record verified civic pledges, and unlock municipal matching funds for clean energy projects.
-          </p>
-        </div>
-
-        <CommunityChallenges />
-      </section>
-
-      {/* ── MODALS ──────────────────────────────────────────────────────────── */}
-      {detailProposal && (
-        <ProposalDetailModal
-          proposal={detailProposal}
-          onClose={() => setDetailProposal(null)}
-        />
-      )}
-
+      {/* Modals */}
       {isNewProposalOpen && (
-        <NewProposalModal
-          onClose={() => setIsNewProposalOpen(false)}
-        />
+        <NewProposalModal onClose={() => setIsNewProposalOpen(false)} />
       )}
 
       {isReportIssueOpen && (
-        <InfrastructureIssueReportModal
-          onClose={() => setIsReportIssueOpen(false)}
-        />
+        <InfrastructureIssueReportModal onClose={() => setIsReportIssueOpen(false)} />
       )}
 
     </div>

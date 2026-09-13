@@ -3,6 +3,7 @@ import { useSolTerraStore } from '../../store/useSolTerraStore';
 import { CityTwinMap } from './CityTwinMap';
 import { CityTwinHUDCard } from './CityTwinHUDCard';
 import { CompassHUD } from './CompassHUD';
+import { SolarpunkWelcomeModal } from './SolarpunkWelcomeModal';
 import { CloudRain, Sun, Building2, Layers, RotateCcw, Plus, Minus } from 'lucide-react';
 
 export const CityTwinView: React.FC = () => {
@@ -16,7 +17,15 @@ export const CityTwinView: React.FC = () => {
   const offlineCount = assets.filter(a => a.status === 'critical' || a.status === 'offline').length;
 
   return (
-    <div className="relative w-full h-full overflow-hidden select-none bg-[#07080f]">
+    <div 
+      className="relative w-full h-full overflow-hidden select-none"
+      style={{
+        background: 'radial-gradient(130% 120% at 50% 0%, #0c2b18 0%, #05180f 45%, #020905 100%)'
+      }}
+    >
+      {/* ── Solarpunk Welcome Modal (Only Pops Up On First Visit) ─────────────── */}
+      <SolarpunkWelcomeModal />
+
       {/* ── 90% Screen Full-Bleed Mapbox View ─────────────────────────────────── */}
       <div className="absolute inset-0 w-full h-full">
         <CityTwinMap
@@ -83,10 +92,9 @@ export const CityTwinView: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Left Floating Dual-Mode HUD Card (Reference Image 1) ─────────────── */}
-      <div className="absolute top-28 md:top-36 left-4 md:left-8 z-30 pointer-events-auto">
-        <CityTwinHUDCard />
-      </div>
+      {/* ── Draggable Floating Dual-Mode HUD Card ─────────────────────────── */}
+      <CityTwinHUDCard />
+
 
       {/* ── Floating Compass Widget (Responsive Position) ───────────────────── */}
       <div className="absolute bottom-24 md:bottom-auto md:top-36 right-4 md:right-8 z-30 pointer-events-auto flex flex-col items-end gap-3">

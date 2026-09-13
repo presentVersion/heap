@@ -78,7 +78,7 @@ export const App: React.FC = () => {
   return (
     <div
       className="flex flex-col h-[100dvh] w-full max-w-[100vw] overflow-hidden relative select-none animate-fadeIn"
-      style={{ background: 'var(--bg)', color: 'var(--text-1)', transition: 'background 0.3s, color 0.3s' }}
+      style={{ background: 'var(--bg-gradient, var(--bg))', color: 'var(--text-1)', transition: 'background 0.3s, color 0.3s' }}
     >
       {/* Floating Non-Permanent Liquid Glass Header Navbar */}
       <TopNavbar 

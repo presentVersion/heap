@@ -229,8 +229,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
 
         {/* Hero Content in Top-Left Corner as requested */}
         <div className="relative z-20 max-w-2xl mt-4 md:mt-8">
-          {/* SolTerra WarpText Component */}
-          <div className="w-full max-w-lg -ml-4" style={{ height: '150px' }}>
+          {/* SolTerra WarpText Component (Responsive across all mobile & desktop ratios) */}
+          <div className="w-full max-w-lg -ml-2 sm:-ml-4" style={{ height: 'clamp(110px, 16vw, 150px)' }}>
             <WarpText
               text="SolTerra"
               color="#f8f5ff"
@@ -241,7 +241,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
               pointerStrength={0.35}
               refraction={0.02}
               ripple={true}
-              fontSize="clamp(3.5rem, 8vw, 6.5rem)"
+              fontSize="clamp(2.75rem, 8.5vw, 6.5rem)"
               fontWeight={900}
               letterSpacing="-0.04em"
               style={{ height: '100%' }}

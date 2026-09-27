@@ -15,7 +15,11 @@ import {
 import { useSolTerraStore } from '../../store/useSolTerraStore';
 import { ThemeMode } from '../../types/solterra';
 
-export const SettingsModal: React.FC = () => {
+interface SettingsModalProps {
+  onReplayIntro?: () => void;
+}
+
+export const SettingsModal: React.FC<SettingsModalProps> = ({ onReplayIntro }) => {
   const { 
     isSettingsOpen, 
     setIsSettingsOpen, 
@@ -194,7 +198,27 @@ export const SettingsModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Section 4: Reset Baseline */}
+          {/* Section 4: Replay Welcome Intro Video */}
+          <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between">
+            <div>
+              <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Sparkles size={13} className="text-emerald-400" />
+                <span>Welcome Intro Video Experience</span>
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">Play the two-part clean energy & digital twin welcome video.</div>
+            </div>
+            <button
+              onClick={() => {
+                setIsSettingsOpen(false);
+                onReplayIntro?.();
+              }}
+              className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer shadow-sm hover:scale-105"
+            >
+              <span>Watch Video</span>
+            </button>
+          </div>
+
+          {/* Section 5: Reset Baseline */}
           <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between">
             <div>
               <div className="text-xs font-bold text-white">Reset Simulation State</div>

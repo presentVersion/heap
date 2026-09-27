@@ -127,10 +127,10 @@ export const AssetsView: React.FC = () => {
   const totalCapacityKw = assets.reduce((sum, a) => sum + (assetPowerState[a.id] !== false ? a.currentPowerKw : 0), 0);
 
   return (
-    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-48 px-4 sm:px-8 md:px-14 lg:px-20 max-w-7xl mx-auto scroll-smooth select-none transition-colors duration-300">
+    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-6 sm:pt-8 md:pt-10 pb-32 md:pb-16 px-3 sm:px-6 md:px-8 lg:px-10 max-w-[1920px] mx-auto scroll-smooth select-none transition-colors duration-300">
       
       {/* ── SECTION 1: HERO & ASSET FLEET OVERVIEW ────────────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-white/5">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2.5 mb-4">
@@ -188,7 +188,7 @@ export const AssetsView: React.FC = () => {
       </section>
 
       {/* ── SECTION 2: INSPECTED ASSET DEEP DIVE & TELEMETRY ─────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="mb-10 sm:mb-12">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
@@ -278,7 +278,7 @@ export const AssetsView: React.FC = () => {
       </section>
 
       {/* ── SECTION 3: SEARCH, CATEGORIES & ZONE EXPLORATION ─────────────────── */}
-      <section className="mb-16 sm:mb-20">
+      <section className="mb-8 sm:mb-10">
         <div className="mb-10 sm:mb-12">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
@@ -382,7 +382,7 @@ export const AssetsView: React.FC = () => {
       </section>
 
       {/* ── SECTION 4: ASSET INVENTORY CARDS COLLECTION ─────────────────────── */}
-      <section className="mb-20">
+      <section className="mb-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
           {filteredAssets.map(asset => {
             const isPowerOn = assetPowerState[asset.id] !== false;

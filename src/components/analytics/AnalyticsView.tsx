@@ -16,10 +16,10 @@ export const AnalyticsView: React.FC = () => {
   const gridHealth = telemetry?.avgHealthScore ?? 94;
 
   return (
-    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-24 sm:pt-32 md:pt-36 pb-36 px-4 sm:px-6 md:px-10 lg:px-12 max-w-7xl mx-auto scroll-smooth select-none">
+    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-6 sm:pt-8 md:pt-10 pb-32 md:pb-16 px-3 sm:px-6 md:px-8 lg:px-10 max-w-[1920px] mx-auto scroll-smooth select-none">
       
       {/* ── HERO SECTION: Sharp Square & Large Bold Typography ──────────────── */}
-      <section className="mb-16 sm:mb-24 md:mb-32">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-emerald-500/30">
           <div className="max-w-4xl space-y-3">
             <div className="flex items-center gap-3">
@@ -48,7 +48,7 @@ export const AnalyticsView: React.FC = () => {
       </section>
 
       {/* ── KEY TELEMETRY INDICES ────────────────────────────────────────────── */}
-      <section className="mb-16 sm:mb-24 md:mb-32">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="mb-6">
           <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
             Real-Time Grid Telemetry Metrics
@@ -95,7 +95,7 @@ export const AnalyticsView: React.FC = () => {
       </section>
 
       {/* ── BENTO TELEMETRY GRID ─────────────────────────────────────────────── */}
-      <section className="mb-16 sm:mb-24 md:mb-32">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="mb-8">
           <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
             Visual Grid Stress & Sensor Bento Grid

@@ -66,10 +66,10 @@ export const SimulationView: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-48 px-4 sm:px-8 md:px-14 lg:px-20 max-w-7xl mx-auto scroll-smooth select-none transition-colors duration-300">
+    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-6 sm:pt-8 md:pt-10 pb-32 md:pb-16 px-3 sm:px-6 md:px-8 lg:px-10 max-w-[1920px] mx-auto scroll-smooth select-none transition-colors duration-300">
       
       {/* ── SECTION 1: HERO & SCENARIO EXECUTION ─────────────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-white/5">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2.5 mb-4">
@@ -129,7 +129,7 @@ export const SimulationView: React.FC = () => {
       </section>
 
       {/* ── SECTION 2: 24-HOUR DIURNAL TIME CYCLE ────────────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="mb-10 sm:mb-12">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
@@ -179,7 +179,7 @@ export const SimulationView: React.FC = () => {
       </section>
 
       {/* ── SECTION 3: WEATHER & ATMOSPHERIC SCENARIOS ───────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="mb-10 sm:mb-12">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
@@ -227,7 +227,7 @@ export const SimulationView: React.FC = () => {
       </section>
 
       {/* ── SECTION 4: MICROGRID DISPATCH & URBAN GROWTH ──────────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="mb-10 sm:mb-12">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
@@ -332,7 +332,7 @@ export const SimulationView: React.FC = () => {
       </section>
 
       {/* ── SECTION 5: SIMULATED IMPACT & TELEMETRY GAUGES ──────────────────── */}
-      <section className="mb-32 md:mb-44 lg:mb-52">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="mb-10 sm:mb-12">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">
@@ -453,7 +453,7 @@ export const SimulationView: React.FC = () => {
       </section>
 
       {/* ── SECTION 6: DYNAMIC ENERGY GENERATION & DEMAND CHART ──────────────── */}
-      <section className="mb-24">
+      <section className="mb-12">
         <div className="mb-10 sm:mb-12">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xs font-mono font-bold tracking-widest uppercase text-slate-400">

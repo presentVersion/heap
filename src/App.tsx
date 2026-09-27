@@ -11,6 +11,7 @@ import { ReportsView } from './components/reports/ReportsView';
 import { AICopilotModal } from './components/copilot/AICopilotModal';
 import { SettingsModal } from './components/settings/SettingsModal';
 import { LandingPage } from './components/landing/LandingPage';
+import { WelcomeVideoPlayer } from './components/welcome/WelcomeVideoPlayer';
 
 export const App: React.FC = () => {
   const { 
@@ -24,6 +25,7 @@ export const App: React.FC = () => {
   } = useSolTerraStore();
 
   const [showLanding, setShowLanding] = useState(true);
+  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Sync theme with DOM document attribute
@@ -69,32 +71,57 @@ export const App: React.FC = () => {
     }
   };
 
-  // 1. Initial Interactive 100-Frame Scroll Landing Page
-  if (showLanding) {
-    return <LandingPage onEnterApp={() => setShowLanding(false)} />;
+  // Handler for "Get Started" / "Enter City Twin" button
+  const handleEnterApp = () => {
+    const hasVisited = localStorage.getItem('solterra_first_visit_completed');
+    if (!hasVisited) {
+      // First-time visit: play the 2 welcome videos sequentially with skip button
+      setShowLanding(false);
+      setShowWelcomeVideo(true);
+    } else {
+      // Returning user: go straight to the digital twin
+      setShowLanding(false);
+    }
+  };
+
+  // 1. First-Time Welcome Video Experience (Auto-play 2 videos in sequence with skip option)
+  if (showWelcomeVideo) {
+    return (
+      <WelcomeVideoPlayer 
+        onComplete={() => {
+          localStorage.setItem('solterra_first_visit_completed', 'true');
+          setShowWelcomeVideo(false);
+        }}
+      />
+    );
   }
 
-  // 2. Full SolTerra Digital Twin Application Workspace (Spacious, No Sidebar, Floating Glass Nav)
+  // 2. Initial Interactive 100-Frame Scroll Landing Page
+  if (showLanding) {
+    return <LandingPage onEnterApp={handleEnterApp} />;
+  }
+
+  // 3. Full SolTerra Digital Twin Application Workspace (Native app feel on mobile & desktop)
   return (
     <div
       className="flex flex-col h-[100dvh] w-full max-w-[100vw] overflow-hidden relative select-none animate-fadeIn"
       style={{ background: 'var(--bg-gradient, var(--bg))', color: 'var(--text-1)', transition: 'background 0.3s, color 0.3s' }}
     >
-      {/* Floating Non-Permanent Liquid Glass Header Navbar */}
+      {/* Permanent Docked Top Navbar */}
       <TopNavbar 
         onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         isMobileMenuOpen={isMobileMenuOpen}
         onGoToLanding={() => setShowLanding(true)}
       />
 
-      {/* Main Full-Bleed App Workspace */}
-      <main className="flex-1 flex flex-col h-full w-full overflow-hidden relative">
+      {/* Main App Workspace (Starts cleanly below permanent navbar) */}
+      <main className="flex-1 flex flex-col min-h-0 w-full overflow-hidden relative">
         {renderActiveView()}
       </main>
 
       {/* Global Modals */}
       <AICopilotModal />
-      <SettingsModal />
+      <SettingsModal onReplayIntro={() => setShowWelcomeVideo(true)} />
     </div>
   );
 };

@@ -87,7 +87,7 @@ export const GradientMenu: React.FC<GradientMenuProps> = ({
             {/* Title - revealed on hover, or permanently shown if active */}
             <span
               className={`
-                uppercase tracking-widest text-[11px] font-semibold transition-all duration-300 whitespace-nowrap px-3
+                uppercase tracking-wider text-xs font-bold transition-all duration-300 whitespace-nowrap px-3
                 ${isActive ? 'block text-[#00f59b]' : 'absolute scale-0 opacity-0 group-hover:scale-100 group-hover:opacity-100 delay-100 text-white'}
               `}
             >

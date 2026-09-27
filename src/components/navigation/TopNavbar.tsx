@@ -132,27 +132,15 @@ export const TopNavbar: React.FC<Props> = ({
   ];
 
   return (
-    <header className="fixed top-3 left-1/2 -translate-x-1/2 z-40 w-[96%] max-w-7xl pointer-events-auto transition-all duration-300">
-      <GlassSurface
-        width="100%"
-        height="64px"
-        borderRadius={0}
-        distortionScale={-90}
-        redOffset={3}
-        greenOffset={8}
-        blueOffset={14}
-        blur={12}
-        backgroundOpacity={0.12}
-        saturation={1.5}
-        className="w-full px-4 shadow-2xl border border-emerald-500/30"
+    <>
+      <header 
+        className="w-full border-b border-emerald-500/25 backdrop-blur-2xl flex-shrink-0 shadow-2xl transition-all duration-300 z-40"
         style={{
-          background: theme === 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(9, 12, 22, 0.82)',
-          boxShadow: theme === 'light'
-            ? '0 16px 40px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 1)'
-            : '0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2)'
+          background: theme === 'light' ? 'rgba(255, 255, 255, 0.96)' : 'rgba(6, 9, 17, 0.94)',
+          borderColor: theme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(16, 185, 129, 0.25)'
         }}
       >
-        <div className="w-full flex items-center justify-between gap-2 md:gap-4">
+        <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-6 md:px-8 h-16 flex items-center justify-between gap-2 md:gap-4">
           {/* Brand & Mobile Toggle */}
           <div className="flex items-center gap-3">
             <button
@@ -182,27 +170,27 @@ export const TopNavbar: React.FC<Props> = ({
                 <Zap size={17} style={{ color: 'var(--accent)' }} />
               </div>
               <div className="hidden sm:block">
-                <div className="text-[13px] font-bold tracking-widest font-heading flex items-center gap-1.5" style={{ color: 'var(--text-1)' }}>
+                <div className="text-sm font-black tracking-widest font-heading flex items-center gap-1.5" style={{ color: 'var(--text-1)' }}>
                   <span>SOLTERRA</span>
-                  <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-white/10 text-emerald-400">TWIN</span>
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">TWIN</span>
                 </div>
-                <div className="text-[9px] tracking-widest uppercase" style={{ color: 'var(--text-3)' }}>
+                <div className="text-[10px] font-semibold tracking-wider uppercase text-slate-300">
                   Renewable City Twin
                 </div>
               </div>
             </div>
 
             <div
-              className="hidden 2xl:flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px]"
+              className="hidden 2xl:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold"
               style={{
-                background: 'rgba(255, 255, 255, 0.04)',
+                background: 'rgba(255, 255, 255, 0.06)',
                 border: '1px solid var(--border)',
                 color: 'var(--text-2)'
               }}
             >
-              <MapPin size={11} style={{ color: 'var(--accent)' }} />
+              <MapPin size={13} style={{ color: 'var(--accent)' }} />
               <span>Kurnool, Andhra Pradesh</span>
-              <ChevronDown size={10} style={{ color: 'var(--text-3)' }} />
+              <ChevronDown size={11} style={{ color: 'var(--text-3)' }} />
             </div>
           </div>
 
@@ -378,17 +366,17 @@ export const TopNavbar: React.FC<Props> = ({
                 AD
               </div>
               <div className="hidden xl:block">
-                <div className="text-[11px] font-semibold" style={{ color: 'var(--text-1)' }}>
+                <div className="text-xs font-bold" style={{ color: 'var(--text-1)' }}>
                   Admin
                 </div>
-                <div className="text-[9px]" style={{ color: 'var(--text-3)' }}>
+                <div className="text-[10px] font-medium text-slate-300">
                   City Operator
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </GlassSurface>
+      </header>
 
       {/* ── Mobile Navigation Drawer Modal Sheet (Triggered by Hamburger) ────── */}
       {isMobileMenuOpen && (
@@ -493,13 +481,18 @@ export const TopNavbar: React.FC<Props> = ({
       )}
 
       {/* ── Mobile Bottom App Dock (Native App Bar for Smartphones) ─────────── */}
-      <nav className="md:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-lg pointer-events-auto">
+      <nav 
+        className="md:hidden fixed left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-lg pointer-events-auto"
+        style={{
+          bottom: 'max(0.75rem, calc(0.5rem + env(safe-area-inset-bottom, 0px)))'
+        }}
+      >
         <div 
-          className="w-full px-2.5 py-2 rounded-3xl border shadow-2xl flex items-center justify-around backdrop-blur-2xl"
+          className="w-full px-2 py-1.5 rounded-3xl border shadow-2xl flex items-center justify-around backdrop-blur-2xl"
           style={{
-            background: 'linear-gradient(180deg, rgba(6, 26, 16, 0.94) 0%, rgba(3, 14, 8, 0.98) 100%)',
-            borderColor: 'rgba(16, 185, 129, 0.25)',
-            boxShadow: '0 16px 40px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(0, 245, 155, 0.15)'
+            background: 'linear-gradient(180deg, rgba(6, 26, 16, 0.96) 0%, rgba(3, 14, 8, 0.98) 100%)',
+            borderColor: 'rgba(16, 185, 129, 0.3)',
+            boxShadow: '0 16px 40px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(0, 245, 155, 0.2)'
           }}
         >
           {[
@@ -517,18 +510,18 @@ export const TopNavbar: React.FC<Props> = ({
                   setActivePage(tab.id as any);
                   if (isMobileMenuOpen && onToggleMobileMenu) onToggleMobileMenu();
                 }}
-                className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all cursor-pointer relative ${
+                className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer relative min-w-[50px] min-h-[48px] ${
                   isSelected 
                     ? 'text-[#00f59b] font-bold scale-105' 
                     : 'text-slate-400 hover:text-emerald-300'
                 }`}
               >
-                <div className={`p-1.5 rounded-xl transition-all ${isSelected ? 'bg-emerald-500/20 shadow-[0_0_12px_rgba(0,245,155,0.3)]' : ''}`}>
+                <div className={`p-1.5 rounded-xl transition-all ${isSelected ? 'bg-emerald-500/20 shadow-[0_0_12px_rgba(0,245,155,0.35)]' : ''}`}>
                   {tab.icon}
                 </div>
-                <span className="text-[10px] tracking-tight font-medium mt-0.5">{tab.label}</span>
+                <span className="text-[11px] tracking-tight font-medium mt-0.5">{tab.label}</span>
                 {isSelected && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#00f59b] absolute -bottom-1 shadow-[0_0_6px_#00f59b]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00f59b] absolute -bottom-0.5 shadow-[0_0_6px_#00f59b]" />
                 )}
               </button>
             );
@@ -537,18 +530,18 @@ export const TopNavbar: React.FC<Props> = ({
           {/* More Drawer Toggle */}
           <button
             onClick={onToggleMobileMenu}
-            className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-2xl transition-all cursor-pointer ${
+            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl transition-all cursor-pointer min-w-[50px] min-h-[48px] ${
               isMobileMenuOpen ? 'text-[#00f59b] font-bold scale-105' : 'text-slate-400 hover:text-white'
             }`}
           >
-            <div className={`p-1.5 rounded-xl transition-all ${isMobileMenuOpen ? 'bg-emerald-500/20 shadow-[0_0_12px_rgba(0,245,155,0.3)]' : ''}`}>
+            <div className={`p-1.5 rounded-xl transition-all ${isMobileMenuOpen ? 'bg-emerald-500/20 shadow-[0_0_12px_rgba(0,245,155,0.35)]' : ''}`}>
               {isMobileMenuOpen ? <X size={20} /> : <Zap size={20} />}
             </div>
-            <span className="text-[10px] tracking-tight font-medium mt-0.5">More</span>
+            <span className="text-[11px] tracking-tight font-medium mt-0.5">More</span>
           </button>
         </div>
       </nav>
-    </header>
+    </>
   );
 };
 

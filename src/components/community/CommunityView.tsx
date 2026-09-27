@@ -118,10 +118,10 @@ export const CommunityView: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-24 sm:pt-32 md:pt-36 pb-36 px-4 sm:px-6 md:px-10 lg:px-12 max-w-7xl mx-auto scroll-smooth select-none">
+    <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-6 sm:pt-8 md:pt-10 pb-32 md:pb-16 px-3 sm:px-6 md:px-8 lg:px-10 max-w-[1920px] mx-auto scroll-smooth select-none">
       
       {/* ── HERO SECTION: Sharp Square & Large Bold Typography ──────────────── */}
-      <section className="mb-16 sm:mb-24 md:mb-32">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-emerald-500/30">
           <div className="max-w-4xl space-y-3">
             <div className="flex items-center gap-3">
@@ -161,7 +161,7 @@ export const CommunityView: React.FC = () => {
       </section>
 
       {/* ── KEY CIVIC INDICES ────────────────────────────────────────────────── */}
-      <section className="mb-16 sm:mb-24 md:mb-32">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="mb-6">
           <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
             Community Renewable Energy Yield
@@ -208,7 +208,7 @@ export const CommunityView: React.FC = () => {
       </section>
 
       {/* ── SOLARPUNK & SOLAR BENTO GRID ──────────────────────────────────────── */}
-      <section className="mb-16 sm:mb-24 md:mb-32">
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
             <h2 className="text-2xl sm:text-4xl font-black font-heading text-white">
@@ -330,7 +330,7 @@ export const CommunityView: React.FC = () => {
       </section>
 
       {/* ── CITIZEN PLEDGE FOOTER ────────────────────────────────────────────── */}
-      <section className="mb-16">
+      <section className="mb-10">
         <div className="bento-card p-8 sm:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6" style={{ background: 'linear-gradient(145deg, rgba(6, 28, 16, 0.9) 0%, rgba(2, 14, 8, 0.98) 100%)' }}>
           <div>
             <div className="flex items-center gap-3 text-[#00f59b] font-bold text-xl mb-2">

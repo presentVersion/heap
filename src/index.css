@@ -75,41 +75,82 @@
   --text-3:       #94a3b8;
 }
 
-/* ─── Reset ─────────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { min-height: 100%; width: 100%; }
-#root { min-height: 100%; width: 100%; }
+/* ─── Reset & Mobile Native App Behavior ───────────────────────────────── */
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body { 
+  height: 100%; 
+  width: 100%; 
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+#root { 
+  height: 100%; 
+  width: 100%; 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
 body {
   background: var(--bg-gradient, var(--bg));
   background-attachment: fixed;
   color: var(--text-1);
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-h1,h2,h3,h4,.font-heading {
-  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  letter-spacing: -0.025em;
+/* Touch friendly tap targets */
+button, a, select, input {
+  touch-action: manipulation;
 }
-.mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.01em; }
 
-/* ─── Glassmorphism & Bento Surfaces (Sharp Square Brutalist/Cyber Edges) ─ */
+/* Safe area insets for modern mobile devices */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+}
+
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0.5rem));
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: 'Space Grotesk', 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.mono, code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.015em;
+}
+
+/* ─── Ultra-Premium Glassmorphism & Bento Surfaces ───────────────────────── */
 .glass, .glass-panel {
   background: var(--bg-card);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
   border: 1px solid var(--border);
-  border-radius: 0px !important;
+  border-radius: 1.25rem;
 }
+
 .glass-sm {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   border: 1px solid var(--border);
-  border-radius: 0px !important;
+  border-radius: 0.875rem;
 }
+
 .glass:hover, .glass-panel:hover, .glass-hover:hover {
   background: var(--bg-card-h);
   border-color: var(--border-h);
@@ -117,35 +158,29 @@ h1,h2,h3,h4,.font-heading {
 
 .bento-card {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
   border: 1px solid var(--border);
-  border-radius: 0px !important;
+  border-radius: 1.25rem;
   position: relative;
   overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .bento-card:hover {
   border-color: var(--border-h);
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px -10px rgba(0, 245, 155, 0.25);
-}
-
-/* Global Sharp Edges Override */
-*, *::before, *::after {
-  border-radius: 0px !important;
+  box-shadow: 0 20px 48px -12px rgba(0, 245, 155, 0.25);
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(3, 14, 7, 0.8); }
-::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.4); border-radius: 0px !important; }
+::-webkit-scrollbar-track { background: rgba(3, 14, 7, 0.6); }
+::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.35); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: #00f59b; }
 
-
-
-/* ─── Range ─────────────────────────────────────────────────────────────── */
-input[type="range"] { accent-color: var(--accent); height: 4px; border-radius: 99px; }
+/* ─── Range & Input ─────────────────────────────────────────────────────── */
+input[type="range"] { accent-color: var(--accent); height: 4px; border-radius: 9999px; }
 input[type="text"], input[type="password"] { background: transparent; }
 
 /* ─── Mapbox ────────────────────────────────────────────────────────────── */
@@ -153,15 +188,28 @@ input[type="text"], input[type="password"] { background: transparent; }
 .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { display: none !important; }
 .mapboxgl-ctrl-attrib { display: none !important; }
 
-/* ─── Glow helpers ──────────────────────────────────────────────────────── */
-.glow-accent   { box-shadow: 0 0 22px -4px rgba(0,245,155,0.4); }
-.glow-amber    { box-shadow: 0 0 22px -4px rgba(245,158,11,0.4); }
-.glow-cyan     { box-shadow: 0 0 22px -4px rgba(6,182,212,0.4); }
-.text-glow     { text-shadow: 0 0 14px currentColor; }
+/* ─── Glow & Text Gradients ──────────────────────────────────────────────── */
+.glow-accent   { box-shadow: 0 0 26px -4px rgba(0, 245, 155, 0.45); }
+.glow-amber    { box-shadow: 0 0 26px -4px rgba(245, 158, 11, 0.45); }
+.glow-cyan     { box-shadow: 0 0 26px -4px rgba(6, 182, 212, 0.45); }
+.text-glow     { text-shadow: 0 0 16px currentColor; }
+.gradient-text-emerald {
+  background: linear-gradient(135deg, #00f59b 0%, #10b981 50%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.gradient-text-amber {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ef4444 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
 /* ─── Animations ────────────────────────────────────────────────────────── */
-@keyframes pulse-soft { 0%,100%{opacity:.8;} 50%{opacity:1;} }
+@keyframes pulse-soft { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
 .pulse-soft { animation: pulse-soft 2.5s ease-in-out infinite; }
+
+@keyframes float-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.float-gentle { animation: float-gentle 4s ease-in-out infinite; }
 
 @keyframes slide-in-right {
   from { opacity:0; transform: translateX(12px); }
